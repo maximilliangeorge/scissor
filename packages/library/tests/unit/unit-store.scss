@@ -1,0 +1,155 @@
+@use 'store';
+@use 'sass-true' as *;
+
+@include describe('namespaces') {
+
+  @include it('should create a namespace') {
+
+    @include store.define-namespace('colors');
+
+    $m: store.get-raw-namespace('colors');
+
+    @include assert-equal($m, ());
+
+  }
+
+  @include it('should add values to a namespace') {
+
+    // using default + map
+
+    @include store.define-value('colors', 'primary', 'red', (
+      'mobile': 'blue'
+    ));
+
+    // using only map
+
+    @include store.define-value('colors', 'secondary', (
+      'default': 'green',
+      'mobile': 'blue'
+    ));
+
+    // using only default
+
+    @include store.define-value('colors', 'tertiary', 'yellow');
+
+    $m: store.get-raw-namespace('colors');
+
+    @include assert-equal($m, (
+      'primary': (
+        'default': 'red',
+        'mobile': 'blue'
+      ),
+      'secondary': (
+        'default': 'green',
+        'mobile': 'blue'
+      ),
+      'tertiary': (
+        'default': 'yellow'
+      )
+    ));
+
+  }
+
+}
+
+@include describe('breakpoints') {
+
+  @include it('should add breakpoints using only "to"') {
+      
+    @include store.define-breakpoint('mobile', (
+      'to': 1440px
+    ));
+
+    $breakpoints: store.get-breakpoints();
+
+    @include assert-equal($breakpoints, (
+      'mobile': ('to': 1440px)
+    ));
+
+  }
+
+  @include it('should add breakpoints using only "from"') {
+      
+    @include store.define-breakpoint('mobile', (
+      'from': 1440px
+    ));
+
+    $breakpoints: store.get-breakpoints();
+
+    @include assert-equal($breakpoints, (
+      'mobile': ('from': 1440px)
+    ));
+
+  }
+
+  @include it('should add breakpoints using both "from" and "to"') {
+      
+    @include store.define-breakpoint('mobile', (
+      'to': 1920px,
+      'from': 1440px
+    ));
+
+    $breakpoints: store.get-breakpoints();
+
+    @include assert-equal($breakpoints, (
+      'mobile': ('from': 1440px, 'to': 1920px)
+    ));
+
+  }
+
+  @include it('should get a breakpoint') {
+
+    @include store.define-breakpoint('mobile', (
+      'to': 1920px,
+      'from': 1440px
+    ));
+
+    $breakpoint: store.get-breakpoint('mobile');
+
+    @include assert-equal($breakpoint, (
+      'from': 1440px,
+      'to': 1920px
+    ));
+
+  }
+
+}
+
+@include describe('values') {
+
+  @include it('should get a scalar value') {
+
+    @include store.define-value('colors', 'primary', red);
+
+    $value: store.get-value('colors', 'primary');
+
+    @include assert-equal($value, red);
+
+  }
+
+  @include it('should get a scalar value by breakpoint (1)') {
+
+    @include store.define-value('colors', 'primary', red, (
+      'mobile': blue
+    ));
+
+    $value: store.get-value('colors', 'primary', 'mobile');
+
+    @include assert-equal($value, blue);
+
+  }
+
+  @include it('should get a scalar value by breakpoint (2)') {
+
+    @include store.define-value('colors', 'primary', (
+      'default': red,
+      'mobile': blue
+    ));
+
+    $value: store.get-value('colors', 'primary', 'mobile');
+
+    @include assert-equal($value, blue);
+
+  }
+
+}

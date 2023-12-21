@@ -1,16 +1,21 @@
 @use 'sass:map';
-@use 'assert';
+@use 'validate';
+@use 'types';
 
 $_store: (
   'breakpoints': ()
 );
 
-@function get-namespace ($key) {
+@function get-raw-namespace ($key) {
   @return map.get($_store, $key);
 }
 
+@function get-all-namespaces () {
+  @return $_store;
+}
+
 @function get-breakpoints () {
-  @return get-namespace('breakpoints');
+  @return get-raw-namespace('breakpoints');
 }
 
 @function get-breakpoint ($key) {
@@ -19,31 +24,54 @@ $_store: (
 
 @function get-value ($namespace, $key, $breakpoint: 'default') {
 
-  $namespace: get-namespace($namespace);
-  $value: map.get($namespace, $key);
+  $namespace: get-raw-namespace($namespace);
 
-  @return map.get($value, $breakpoint);
+  @if $namespace == null {
+    @error 'Namespace not found';
+  }
+
+  @return map.get($namespace, $key, $breakpoint);
+
+}
+
+@function get-values ($namespace, $overrides: ()) {
+
+  $namespace: get-raw-namespace($namespace);
+
+  @if $namespace == null {
+    @error 'Namespace not found';
+  }
+
+  @return map.merge($namespace, $overrides);
 
 }
 
 @mixin define-namespace ($key, $value: ()) {
-  @include assert.string($key, 'Expected namespace name');
+  @include validate.string($key, 'Expected namespace');
   $_store: map.set($_store, $key, $value) !global;
 }
 
-@mixin define-breakpoint ($key) {
-  @include assert.string($key, 'Expected breakpoint name');
+@mixin define-breakpoint ($key, $def) {
+
+  @include validate.string($key, 'Expected breakpoint name');
+  @include validate.type($def, types.$breakpoint-definition);
+
   $breakpoints: get-breakpoints();
-  $breakpoints: map.merge($breakpoints, ( $key: $value ));
+
+  $breakpoints: map.merge($breakpoints, (
+    $key: $def
+  ));
+
   $_store: map.set($_store, 'breakpoints', $breakpoints) !global;
+
 }
 
 @mixin define-value ($namespace, $key, $value, $reactive: ()) {
 
-  @include assert.string($namespace, 'Expected namespace name');
-  @include assert.string($key, 'Expected value name');
+  @include validate.string($namespace, 'Expected namespace name');
+  @include validate.string($key, 'Expected value name');
 
-  $module: get-namespace($namespace);
+  $module: get-raw-namespace($namespace);
 
   @if (type-of($value) == 'map') {
 

@@ -1,0 +1,66 @@
+@use 'sass:map';
+@use 'sass:meta';
+
+@mixin type ($value, $type) {
+
+  // loop through the map and validate each value
+
+  @if meta.type-of($type) == 'map' {
+    @each $k, $v in $type {
+
+      @if not map.has-key($value, $k) {
+        @error 'Expected value to have key #{$k}';
+      }
+
+      @include type($v, map.get($value, $k));
+
+    }
+  }
+
+  @else if meta.type-of($type) == 'list' {
+
+    $valid: false;
+
+    @each $prop in $type {
+
+      @if meta.type-of($prop) == 'map' {
+
+        @each $k, $v in $type {
+
+          @if map.has-key($value, $k) {
+            @if meta.type-of(map.get($value, $k)) == $v {
+              $valid: true;
+            }
+          }
+    
+        }
+
+      }
+
+      @else if meta.type-of($value) == $prop {
+        $valid: true;
+      }
+
+    }
+
+  }
+
+  // validate the value
+
+  @else if meta.type-of($value) != $type {
+    @error 'Expected value to be of type #{$type} but got #{meta.type-of($value)}';
+  }
+
+}
+
+@mixin string ($value, $message: 'Expected string') {
+  @if type-of($value) != 'string' {
+    @error $message;
+  }
+}
+
+@mixin empty ($value, $message: 'Expected empty value') {
+  @if $value != null {
+    @error $message;
+  }
+}

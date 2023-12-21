@@ -1,1 +1,97 @@
-@forward "store";
+@use 'store';
+@use 'validate';
+@use 'sass:map';
+@use 'sass:meta';
+
+@mixin use-breakpoint-by-name ($name) {
+
+  $breakpoint: store.get-breakpoint($name);
+
+  @if $breakpoint == null {
+    @error 'Did not find breakpoint "#{$name}"';
+  }
+
+  $to: map.get($breakpoint, 'to');
+  $from: map.get($breakpoint, 'from');
+  
+  @if $to != null {
+
+    @media (max-width: $to) {
+      @content;
+    }
+
+  } @else if $from != null {
+
+    @media (min-width: $from) {
+      @content;
+    }
+
+  }
+  
+  @else {
+
+    @media (min-width: $from) and (max-width: $to) {
+      @content;
+    }
+
+    @content;
+
+  }
+
+}
+
+@mixin inject-namespace ($name) {
+
+  $namespace: store.get-raw-namespace($name);
+
+  @if $namespace == null {
+    @error 'Did not find namespace #{$name}';
+  }
+
+  @each $key, $breaks in $namespace {
+
+    @each $break, $value in $breaks {
+
+      @if $break == 'default' {
+        --#{$name}-#{$key}: #{$value};
+      }
+      
+      @else {
+        @include use-breakpoint-by-name($break) {
+          --#{$name}-#{$key}: #{$value};
+        }
+      }
+
+    }
+
+    
+
+  }
+
+}
+
+@mixin inject-all ($prop) {
+
+  @include validate.string($property, 'Expected property');
+
+  $store: store.get-all-namespaces();
+
+  // skip breakpoints namespace
+
+  @each $name in $store {
+    @if $name != 'breakpoints' {
+      @include inject-namespace($name, $prop);
+    }
+  }
+
+}
+
+@mixin use ($name) {
+
+  @if $name == null {
+    @include inject-all;
+  } @else {
+    @include inject-namespace($name);
+  }
+
+}
