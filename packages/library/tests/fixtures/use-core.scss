@@ -1,0 +1,9 @@
+@use 'core' as x;
+
+@include x.define-namespace('colors');
+@include x.define-value('colors', 'primary', 'red');
+
+body {
+  color: x.get-value('colors', 'primary');
+}
+

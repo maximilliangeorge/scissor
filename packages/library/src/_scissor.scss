@@ -1,0 +1,45 @@
+@use "sass:map";
+
+$config: (
+  "colors": (),
+  "margins": (),
+  "paddings": (),
+  "breakpoints": (),
+);
+
+$-test: red;
+
+@mixin define ($namespace, $key, $defaultValue, $breakpointEntries: ()) {
+
+  $map: map.get($config, $namespace);
+
+  $_test: blue;
+
+  @if not $map {
+    @error "`#{$namespace}` not found in $config";
+  };
+
+  $mappedEntries: (
+    "default": $defaultValue,
+  );
+
+  @each $breakpointKey, $breakpointValue in $breakpointEntries {
+    $mappedEntries: map.merge($mappedEntries, (
+      $breakpointKey: $breakpointValue
+    ));
+  }
+
+  $deepEntries: (
+    $namespace: (
+      $key: $mappedEntries
+    )
+  );
+
+  $config: map.deep-merge($config, $deepEntries) !global;
+
+}
+
+@mixin color ($key) {
+  $color: map.get($config, "colors", $key, "default");
+  color: $color;
+}

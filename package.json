@@ -1,0 +1,19 @@
+{
+  "name": "scissor-scss",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest packages library"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "sass-true": "^7.0.0",
+    "vitest": "^1.0.4"
+  },
+  "dependencies": {
+    "sass": "^1.69.5",
+    "sass-embedded": "^1.69.5"
+  }
+}

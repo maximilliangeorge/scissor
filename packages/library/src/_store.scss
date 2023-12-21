@@ -1,0 +1,70 @@
+@use 'sass:map';
+@use 'assert';
+
+$_store: (
+  'breakpoints': ()
+);
+
+@function get-namespace ($key) {
+  @return map.get($_store, $key);
+}
+
+@function get-breakpoints () {
+  @return get-namespace('breakpoints');
+}
+
+@function get-breakpoint ($key) {
+  @return map.get(get-breakpoints(), $key);
+}
+
+@function get-value ($namespace, $key, $breakpoint: 'default') {
+
+  $namespace: get-namespace($namespace);
+  $value: map.get($namespace, $key);
+
+  @return map.get($value, $breakpoint);
+
+}
+
+@mixin define-namespace ($key, $value: ()) {
+  @include assert.string($key, 'Expected namespace name');
+  $_store: map.set($_store, $key, $value) !global;
+}
+
+@mixin define-breakpoint ($key) {
+  @include assert.string($key, 'Expected breakpoint name');
+  $breakpoints: get-breakpoints();
+  $breakpoints: map.merge($breakpoints, ( $key: $value ));
+  $_store: map.set($_store, 'breakpoints', $breakpoints) !global;
+}
+
+@mixin define-value ($namespace, $key, $value, $reactive: ()) {
+
+  @include assert.string($namespace, 'Expected namespace name');
+  @include assert.string($key, 'Expected value name');
+
+  $module: get-namespace($namespace);
+
+  @if (type-of($value) == 'map') {
+
+    $module: map.merge($module, (
+      $key: map.merge($value, $reactive)
+    ));
+
+  } @else {
+
+    $module: map.merge($module, (
+      $key: map.merge(( 'default': $value ), $reactive)
+    ));
+
+  }
+
+  $default: map.get($module, $key, 'default');
+
+  @if $default == null {
+    @error 'Default value is required';
+  }
+
+  $_store: map.set($_store, $namespace, $module) !global;
+
+}

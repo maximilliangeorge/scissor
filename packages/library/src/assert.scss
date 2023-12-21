@@ -1,0 +1,11 @@
+@mixin string ($value, $message: 'Expected string') {
+  @if type-of($value) != 'string' {
+    @error $message;
+  }
+}
+
+@mixin empty ($value, $message: 'Expected empty value') {
+  @if $value != null {
+    @error $message;
+  }
+}
