@@ -1,0 +1,19 @@
+@use 'library' as x;
+
+@mixin setup () {
+  @include x.use-store('*');
+}
+
+@mixin store ($names) {
+  @include x.use-store($names);
+}
+
+@mixin breakpoint ($name, $modifier: '=') {
+  @include x.use-breakpoint($name, $modifier) {
+    @content;
+  }
+}
+
+@function value ($name, $key, $overrides: null) {
+  @return x.use-value($name, $key, $overrides);
+}

@@ -1,0 +1,13 @@
+@use 'library' as x;
+
+@mixin store ($store, $defs: ()) {
+  @include x.define-store($store, $defs: ());
+}
+
+@mixin breakpoint ($name, $breakpoint: null) {
+  @include x.define-breakpoint($name, $breakpoint);
+}
+
+@mixin value ($name, $key, $value, $breakpoints: ()) {
+  @include x.define-value($name, $key, $value, $breakpoints);
+}

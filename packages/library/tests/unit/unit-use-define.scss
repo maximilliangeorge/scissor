@@ -1,6 +1,7 @@
+@use 'use';
+@use 'define';
 @use 'core' as core;
 @use 'util' as util;
-@use 'library' as x;
 @use 'sass-true' as *;
 
 @include describe('define-store') {
@@ -11,7 +12,7 @@
       '_breakpoints': ()
     ));
 
-    @include x.define-store('foo', ()); 
+    @include define.store('foo', ()); 
 
     @include assert-equal(core.get-all-stores(), (
       '_breakpoints': (),
@@ -30,11 +31,11 @@
 
     @include assert-equal(core.get-breakpoints(), ());
 
-    @include x.define-breakpoint('foo', (
+    @include define.breakpoint('foo', (
       'to': 19px
     ));
 
-    @include x.define-breakpoint('bar', (
+    @include define.breakpoint('bar', (
       'from': 20px,
       'to': 30px
     ));
@@ -54,9 +55,9 @@
 
   @include it('should define a value (1)') {
 
-    @include x.define-store('foo', ()); 
+    @include define.store('foo', ()); 
 
-    @include x.define-value('foo', 'bar', (
+    @include define.value('foo', 'bar', (
       '*': 1px
     ));
 
@@ -76,9 +77,9 @@
 
   @include it('should get the value') {
 
-    @include x.define-store('colors', ());
+    @include define.store('colors', ());
 
-    @include x.define-value('colors', 'primary', (
+    @include define.value('colors', 'primary', (
       '*': red
     ));
 
@@ -89,7 +90,7 @@
 
     :root {
       color: util.hash-map($some_map);
-      color: x.use-value('colors', 'bar');
+      color: use.value('colors', 'bar');
     }
 
     @include core.reset-stores();
@@ -98,18 +99,18 @@
 
   @include it('should create a separate custom property for an override') {
 
-    @include x.define-store('colors', ());
+    @include define.store('colors', ());
 
-    @include x.define-value('colors', 'primary', (
+    @include define.value('colors', 'primary', (
       '*': red,
       'mobile': blue
     ));
 
     :root {
-      color: x.use-value('colors', 'primary', (
+      color: use.value('colors', 'primary', (
         'mobile': green
       ));
-      color: x.use-value('colors', 'primary', (
+      color: use.value('colors', 'primary', (
         'mobile': green
       ));
     }
@@ -133,18 +134,18 @@
 
   @include it('should create not create unneccessary duplicate custom properties') {
 
-    @include x.define-store('colors', ());
+    @include define.store('colors', ());
 
-    @include x.define-value('colors', 'primary', (
+    @include define.value('colors', 'primary', (
       '*': red,
       'mobile': blue
     ));
 
     :root {
-      color: x.use-value('colors', 'primary', (
+      color: use.value('colors', 'primary', (
         'mobile': blue
       ));
-      color: x.use-value('colors', 'primary', (
+      color: use.value('colors', 'primary', (
         'mobile': blue,
         '*': red
       ));
@@ -169,14 +170,14 @@
 
   @include it('should inject a single custom property') {
 
-    @include x.define-store('colors', ());
+    @include define.store('colors', ());
 
-    @include x.define-value('colors', 'primary', (
+    @include define.value('colors', 'primary', (
       '*': red
     ));
 
     :root {
-      @include x.use-store('colors');
+      @include use.store('colors');
     }
 
     @include core.reset-stores();
@@ -185,20 +186,20 @@
 
   @include it('should inject multiple custom properties') {
 
-    @include x.define-store('colors', ());
+    @include define.store('colors', ());
 
-    @include x.define-value('colors', 'primary', (
+    @include define.value('colors', 'primary', (
       '*': red
     ));
 
-    @include x.define-store('sizes', ());
+    @include define.store('sizes', ());
 
-    @include x.define-value('sizes', 'small', (
+    @include define.value('sizes', 'small', (
       '*': 10px
     ));
 
     :root {
-      @include x.use-store('*');
+      @include use.store('*');
     }
 
     @include core.reset-stores();
@@ -207,32 +208,32 @@
 
   @include it('should inject multiple custom properties with breakpoints') {
 
-    @include x.define-breakpoint('mobile', (
+    @include define.breakpoint('mobile', (
       'to': 375px
     ));
 
-    @include x.define-breakpoint('tablet', (
+    @include define.breakpoint('tablet', (
       'from': 376px,
       'to': 768px
     ));
 
-    @include x.define-store('colors', ());
+    @include define.store('colors', ());
 
-    @include x.define-value('colors', 'primary', (
+    @include define.value('colors', 'primary', (
       '*': red,
       'mobile': blue
     ));
 
-    @include x.define-store('sizes', ());
+    @include define.store('sizes', ());
 
-    @include x.define-value('sizes', 'small', (
+    @include define.value('sizes', 'small', (
       '*': 10px,
       'mobile': 20px,
       'tablet': 30px
     ));
 
     :root {
-      @include x.use-store('*');
+      @include use.store('*');
     }
 
     @include core.reset-stores();
@@ -245,12 +246,12 @@
 
   @include it('should create block for a breakpoint (*/to)') {
 
-    @include x.define-breakpoint('mobile', (
+    @include define.breakpoint('mobile', (
       'to': 375px
     ));
 
     :root {
-      @include x.use-breakpoint('mobile') {
+      @include use.breakpoint('mobile') {
         color: red;
       }
     }
@@ -261,12 +262,12 @@
 
   @include it('should create block for a breakpoint (from/*)') {
 
-    @include x.define-breakpoint('tablet', (
+    @include define.breakpoint('tablet', (
       'from': 375px
     ));
 
     :root {
-      @include x.use-breakpoint('tablet') {
+      @include use.breakpoint('tablet') {
         color: red;
       }
     }
@@ -277,13 +278,13 @@
 
   @include it('should create block for a breakpoint (from/to)') {
 
-    @include x.define-breakpoint('desktop', (
+    @include define.breakpoint('desktop', (
       'from': 375px,
       'to': 768px
     ));
 
     :root {
-      @include x.use-breakpoint('desktop') {
+      @include use.breakpoint('desktop') {
         color: red;
       }
     }
@@ -294,22 +295,22 @@
 
   @include it('should create block for breakpoint with modifiers') {
 
-    @include x.define-breakpoint('tablet', (
+    @include define.breakpoint('tablet', (
       'from': 375px,
       'to': 768px
     ));
 
     :root {
-      @include x.use-breakpoint('tablet', '<') {
+      @include use.breakpoint('tablet', '<') {
         color: red;
       }
-      @include x.use-breakpoint('tablet', '>') {
+      @include use.breakpoint('tablet', '>') {
         color: red;
       }
-      @include x.use-breakpoint('tablet', '<=') {
+      @include use.breakpoint('tablet', '<=') {
         color: red;
       }
-      @include x.use-breakpoint('tablet', '>=') {
+      @include use.breakpoint('tablet', '>=') {
         color: red;
       }
     }
