@@ -1,0 +1,83 @@
+@use 'sass:math';
+@use 'sass:string';
+
+@function to-hex($d) {
+
+  $hexVals: 'a' 'b' 'c' 'd' 'e' 'f';
+  $base: 16;
+  $quotient: $d;
+  $result: '';
+
+  @if $d == 0 {
+    $result: '00';
+  }
+
+  @while $quotient != 0 {
+
+    $mod: $quotient % $base;
+    $quotient: floor(math.div($quotient, $base));
+
+    @if $mod > 9 {
+      $mod: nth($hexVals, $mod - 9);
+    }
+
+    @if $d < $base {
+      $result: '0' + $mod;
+    } @else {
+      $result: $mod + $result;
+    }
+
+  }
+
+  @return $result;
+
+}
+
+@function hash($input) {
+
+  $hash: 0;
+
+  @for $i from 1 through str-length($input) {
+    $char: string.slice($input, $i, $i);
+    $hash: ($hash * 31 + str-index('*abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-', $char)) % 1000000;
+  }
+
+  $paddingLength: 6;
+  $hashValue: $hash % 16777215;
+  $hashString: '' + to-hex($hashValue);
+
+  @while str-length($hashString) < $paddingLength {
+    $hashString: '0' +  $hashString;
+  }
+
+  @return $hashString;
+
+}
+
+@function _strip-spaces ($string) {
+
+  $result: '';
+
+  @for $i from 1 through str-length($string) {
+    $char: string.slice($string, $i, $i);
+    @if $char != ' ' {
+      $result: $result + $char;
+    }
+  }
+
+  @return $result;
+
+}
+
+@function hash-map ($map) {
+
+  $encodedString: '';
+
+  @each $key, $value in $map {
+    $value: _strip-spaces('#{ $value }');
+    $encodedString: #{$encodedString + $key + $value};
+  }
+
+  @return hash($encodedString);
+
+}

@@ -1,23 +1,42 @@
-@use 'core';
-@use 'store';
+@use 'standard' as x;
 @use 'sass-true' as *;
 
 @include describe('variable injection') {
 
-  @include store.define-breakpoint('mobile', (
+  @include x.define('colors', (
+    // 'secondary': (
+    //   '*': 'green',
+    //   'mobile': 'blue'
+    // )
+  ));
+
+  @include x.breakpoint('mobile', (
     'to': 1440px
   ));
 
-  @include store.define-namespace('colors', (
-    'primary': (
-      'default': 'red',
-      'mobile': 'blue'
-    )
+  @include x.breakpoint('mobile', (
+    'to': 1440px
   ));
 
   @include it('should inject variables') {
+
+    @include x.set('colors', 'primary', (
+      '*': red,
+      'mobile': blue
+    ));
+
     body {
-      @include core.use('colors');
+      @include x.provide('colors');
+      color: x.get('colors', 'primary');
+      color: x.get('colors', 'primary', (
+        'mobile': 'orange'
+      ));
+      color: x.get('colors', 'primary', (
+        'mobile': 'orange'
+      ));
+
+      @include x.provide('colors');
+
     }
   }
 

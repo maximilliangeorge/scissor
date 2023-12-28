@@ -24,7 +24,7 @@
     // using only map
 
     @include store.define-value('colors', 'secondary', (
-      'default': 'green',
+      '*': 'green',
       'mobile': 'blue'
     ));
 
@@ -36,15 +36,15 @@
 
     @include assert-equal($m, (
       'primary': (
-        'default': 'red',
+        '*': 'red',
         'mobile': 'blue'
       ),
       'secondary': (
-        'default': 'green',
+        '*': 'green',
         'mobile': 'blue'
       ),
       'tertiary': (
-        'default': 'yellow'
+        '*': 'yellow'
       )
     ));
 
@@ -121,7 +121,7 @@
 
     @include store.define-value('colors', 'primary', red);
 
-    $value: store.get-value('colors', 'primary');
+    $value: store.get-raw-value('colors', 'primary');
 
     @include assert-equal($value, red);
 
@@ -133,7 +133,7 @@
       'mobile': blue
     ));
 
-    $value: store.get-value('colors', 'primary', 'mobile');
+    $value: store.get-raw-value('colors', 'primary', 'mobile');
 
     @include assert-equal($value, blue);
 
@@ -142,11 +142,11 @@
   @include it('should get a scalar value by breakpoint (2)') {
 
     @include store.define-value('colors', 'primary', (
-      'default': red,
+      '*': red,
       'mobile': blue
     ));
 
-    $value: store.get-value('colors', 'primary', 'mobile');
+    $value: store.get-raw-value('colors', 'primary', 'mobile');
 
     @include assert-equal($value, blue);
 

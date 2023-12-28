@@ -1,0 +1,288 @@
+@use 'core' as core;
+@use 'store' as store;
+@use 'util' as util;
+@use 'library' as x;
+@use 'sass-true' as *;
+
+@include describe('define-store') {
+
+  @include it('should define a store') {
+
+    @include assert-equal(store.get-all-stores(), (
+      '_breakpoints': ()
+    ));
+
+    @include x.define-store('foo', ()); 
+
+    @include assert-equal(store.get-all-stores(), (
+      '_breakpoints': (),
+      'foo': ()
+    ));
+
+    @include store.reset-stores();
+
+  }
+
+}
+
+@include describe('define-breakpoint') {
+
+  @include it('should define breakpoints') {
+
+    @include assert-equal(store.get-breakpoints(), ());
+
+    @include x.define-breakpoint('foo', (
+      'to': 19px
+    ));
+
+    @include x.define-breakpoint('bar', (
+      'from': 20px,
+      'to': 30px
+    ));
+
+    @include assert-equal(store.get-breakpoints(), (
+      'foo': ('to': 19px),
+      'bar': ('from': 20px, 'to': 30px)
+    ));
+
+    @include store.reset-stores();
+
+  }
+
+}
+
+@include describe('define-value') {
+
+  @include it('should define a value (1)') {
+
+    @include x.define-store('foo', ()); 
+
+    @include x.define-value('foo', 'bar', (
+      '*': 1px
+    ));
+
+    @include assert-equal(store.get-raw-store('foo'), (
+      'bar': (
+        '*': 1px
+      )
+    ));
+
+    @include store.reset-stores();
+
+  }
+
+}
+
+@include describe('use-value') {
+
+  @include it('should get the value') {
+
+    @include x.define-store('colors', ());
+
+    @include x.define-value('colors', 'primary', (
+      '*': red
+    ));
+
+    $some_map: (
+      'mobile': 10px 10px,
+      'tablet': 20px 20px
+    );
+
+    :root {
+      color: util.hash-map($some_map);
+      color: x.use-value('colors', 'bar');
+    }
+
+    @include store.reset-stores();
+
+  }
+
+  @include it('should create a separate custom property for an override') {
+
+    @include x.define-store('colors', ());
+
+    @include x.define-value('colors', 'primary', (
+      '*': red,
+      'mobile': blue
+    ));
+
+    :root {
+      color: x.use-value('colors', 'primary', (
+        'mobile': green
+      ));
+      color: x.use-value('colors', 'primary', (
+        'mobile': green
+      ));
+    }
+
+    $store: store.get-raw-store('colors');
+
+    @include assert-equal($store, (
+      'primary': (
+        '*': red,
+        'mobile': blue
+      ),
+      'primary-046f11': (
+        '*': red,
+        'mobile': green
+      )
+    ));
+
+    @include store.reset-stores();
+
+  }
+
+  @include it('should create not create unneccessary duplicate custom properties') {
+
+    @include x.define-store('colors', ());
+
+    @include x.define-value('colors', 'primary', (
+      '*': red,
+      'mobile': blue
+    ));
+
+    :root {
+      color: x.use-value('colors', 'primary', (
+        'mobile': blue
+      ));
+      color: x.use-value('colors', 'primary', (
+        'mobile': blue,
+        '*': red
+      ));
+    }
+
+    $store: store.get-raw-store('colors');
+
+    @include assert-equal($store, (
+      'primary': (
+        '*': red,
+        'mobile': blue
+      )
+    ));
+
+    @include store.reset-stores();
+
+  }
+
+}
+
+@include describe('use-store') {
+
+  @include it('should inject a single custom property') {
+
+    @include x.define-store('colors', ());
+
+    @include x.define-value('colors', 'primary', (
+      '*': red
+    ));
+
+    :root {
+      @include x.use-store('colors');
+    }
+
+    @include store.reset-stores();
+
+  }
+
+  @include it('should inject all custom properties') {
+
+    @include x.define-store('colors', ());
+
+    @include x.define-value('colors', 'primary', (
+      '*': red
+    ));
+
+    @include x.define-store('sizes', ());
+
+    @include x.define-value('sizes', 'small', (
+      '*': 10px
+    ));
+
+    :root {
+      @include x.use-store('*');
+    }
+
+    @include store.reset-stores();
+
+  }
+
+}
+
+@include describe('use-breakpoint') {
+
+  @include it('should create block for a breakpoint (*/to)') {
+
+    @include x.define-breakpoint('mobile', (
+      'to': 375px
+    ));
+
+    :root {
+      @include x.use-breakpoint('mobile') {
+        color: red;
+      }
+    }
+
+    @include store.reset-stores();
+
+  }
+
+  @include it('should create block for a breakpoint (from/*)') {
+
+    @include x.define-breakpoint('tablet', (
+      'from': 375px
+    ));
+
+    :root {
+      @include x.use-breakpoint('tablet') {
+        color: red;
+      }
+    }
+
+    @include store.reset-stores();
+
+  }
+
+  @include it('should create block for a breakpoint (from/to)') {
+
+    @include x.define-breakpoint('desktop', (
+      'from': 375px,
+      'to': 768px
+    ));
+
+    :root {
+      @include x.use-breakpoint('desktop') {
+        color: red;
+      }
+    }
+
+    @include store.reset-stores();
+
+  }
+
+  @include it('should create block for breakpoint with modifiers') {
+
+    @include x.define-breakpoint('tablet', (
+      'from': 375px,
+      'to': 768px
+    ));
+
+    :root {
+      @include x.use-breakpoint('tablet', '<') {
+        color: red;
+      }
+      @include x.use-breakpoint('tablet', '>') {
+        color: red;
+      }
+      @include x.use-breakpoint('tablet', '<=') {
+        color: red;
+      }
+      @include x.use-breakpoint('tablet', '>=') {
+        color: red;
+      }
+    }
+
+    @include store.reset-stores();
+
+  }
+
+}

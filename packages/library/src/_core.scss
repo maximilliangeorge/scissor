@@ -1,0 +1,123 @@
+@use 'store';
+@use 'validate';
+@use 'sass:map';
+@use 'sass:math';
+
+@function hash-map ($map) {
+
+  $hash: '';
+
+  @each $key, $value in $map {
+    $hash: $hash + $key + $value;
+  }
+
+  @return $hash;
+
+}
+
+@mixin use-breakpoint-by-name ($name, $modifier: '=') {
+
+  $breakpoint: store.get-breakpoint($name);
+
+  $to: map.get($breakpoint, 'to');
+  $from: map.get($breakpoint, 'from');
+
+  @if $breakpoint == null {
+    @error 'Did not find breakpoint "#{$name}"';
+  }
+
+  @if ($to == null) or ($modifier == '>=') {
+    @media (min-width: $from) {
+      @content;
+    }
+  }
+  
+  @else if ($from == null) or ($modifier == '<=') {
+    @media (max-width: $to) {
+      @content;
+    }
+  }
+  
+  @else if ($modifier == '<') {
+
+    @if not (math.unit($from) == 'px') {
+      @error 'Modifier not supported';
+    }  
+
+    @media (max-width: #{ $from - 1px }) {
+      @content;
+    }
+
+  }
+
+  @else if ($modifier == '>') {
+
+    @if not (math.unit($to) == 'px') {
+      @error 'Modifier not supported';
+    }   
+
+    @media (min-width: #{ $to + 1px }) {
+      @content;
+    }
+
+  }
+
+  @else {
+
+    @media (min-width: $from) and (max-width: $to) {
+      @content;
+    }
+
+  }
+
+}
+
+@mixin inject-store ($name) {
+
+  $store: store.get-raw-store($name);
+
+  @if $store == null {
+    @error 'Did not find store "#{$name}"';
+  }
+
+  @each $key, $breaks in $store {
+
+    @each $break, $value in $breaks {
+
+      @if $break == '*' {
+        --#{$name}-#{$key}: #{$value};
+      }
+      
+      @else {
+        @include use-breakpoint-by-name($break) {
+          --#{$name}-#{$key}: #{$value};
+        }
+      }
+
+    }
+
+    
+
+  }
+
+}
+
+@mixin inject-all () {
+
+  @each $name, $values in store.get-all-stores() {
+    @if not ($name == '_breakpoints') {
+      @include inject-store($name);
+    }
+  }
+
+}
+
+@mixin use ($name) {
+
+  @if ($name == '*') {
+    @include inject-all;
+  } @else {
+    @include inject-store($name);
+  }
+
+}

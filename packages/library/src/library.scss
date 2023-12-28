@@ -1,0 +1,41 @@
+@use 'core';
+@use 'store';
+@use 'sass:meta';
+
+// define
+
+@mixin define-store ($store, $defs: ()) {
+  @include store.define-store($store, $defs);
+}
+
+@mixin define-breakpoint ($name, $breakpoint: null) {
+  @include store.define-breakpoint($name, $breakpoint);
+}
+
+@mixin define-value ($name, $key, $value, $breakpoints: ()) {
+  @include store.define-value($name, $key, $value, $breakpoints);
+}
+
+// use
+
+@mixin use-store ($name) {
+
+  @if ($name == '*') {
+    @include core.inject-all;
+  }
+
+  @else {
+    @include core.inject-store($name);
+  }
+
+}
+
+@mixin use-breakpoint ($name, $modifier: '=') {
+  @include core.use-breakpoint-by-name($name, $modifier) {
+    @content;
+  }
+}
+
+@function use-value ($name, $key, $overrides: null) {
+  @return store.get-value($name, $key, $overrides);
+}
