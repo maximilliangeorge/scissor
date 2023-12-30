@@ -1,6 +1,6 @@
-@use 'core' as core;
-@use 'util' as util;
-@use 'library' as x;
+@use '@scissor/framework/core';
+@use '@scissor/framework/util';
+@use '@scissor/framework' as x;
 @use 'sass-true' as *;
 
 @include describe('define-store') {

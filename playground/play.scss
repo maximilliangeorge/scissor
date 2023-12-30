@@ -1,7 +1,15 @@
-@use 'sass:meta';
-@use 'defs';
-@use 'styles';
-@use '../src/use.scss';
+@use '@scissor/use';
+@use '@scissor/define';
+
+@include define.store('colors', (
+  'primary': red,
+  'secondary': blue,
+  'tertiary': orange
+));
+
+body {
+  color: use.value('colors', 'primary');
+}
 
 // must appear last!
 

@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest'
 
 const loadPaths = [
   'node_modules',
-  'packages/library/src'
+  'src'
 ]
 
 describe('scissor', () => {

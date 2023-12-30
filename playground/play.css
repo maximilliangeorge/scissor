@@ -1,16 +1,9 @@
-h1 {
-  color: var(--colors-primary-02d5ed);
+body {
+  color: var(--colors-primary);
 }
 
 :root {
-  --colors-primary: green;
+  --colors-primary: red;
   --colors-secondary: blue;
-  --colors-primary-02d5ed: green;
-}
-@media (max-width: 767px) {
-  :root {
-    --colors-primary: yellow;
-    --colors-secondary: red;
-    --colors-primary-02d5ed: red;
-  }
+  --colors-tertiary: orange;
 }

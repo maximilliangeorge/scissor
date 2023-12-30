@@ -1,0 +1,22 @@
+{
+  "name": "@scissor/define",
+  "version": "0.1.0",
+  "description": "A modern SASS/SCSS framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maximilliangeorge/scissor.git"
+  },
+  "author": "Maximillian George",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/maximilliangeorge/scissor/issues"
+  },
+  "homepage": "https://github.com/maximilliangeorge/scissor#readme",
+  "dependencies": {
+    "@scissor/framework": "0.1.0"
+  }
+}
