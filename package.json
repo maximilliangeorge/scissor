@@ -1,6 +1,6 @@
 {
   "name": "@scissor/monorepo",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A modern SASS/SCSS framework",
   "main": "index.js",
   "workspaces": [
