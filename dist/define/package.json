@@ -2,7 +2,7 @@
   "name": "@scissor/define",
   "version": "0.1.3",
   "description": "A modern SASS/SCSS framework",
-  "main": "index.js",
+  "main": "index.scss",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
