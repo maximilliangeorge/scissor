@@ -42,6 +42,9 @@ describe('scissor', () => {
       /*   ✔ [assert-equal] should define a store */
       /*   ✔ [assert-equal] should define a store */
       /*  */
+      /* Test: should allow value definitions with the store */
+      /*   ✔ [assert-equal] should allow value definitions with the store */
+      /*  */
       /*  */
       /* # Module: define-breakpoint */
       /* --------------------------- */
@@ -183,6 +186,9 @@ describe('scissor', () => {
       /* Test: should define a store */
       /*   ✔ [assert-equal] should define a store */
       /*   ✔ [assert-equal] should define a store */
+      /*  */
+      /* Test: should allow value definitions with the store */
+      /*   ✔ [assert-equal] should allow value definitions with the store */
       /*  */
       /*  */
       /* # Module: define-breakpoint */

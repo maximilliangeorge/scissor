@@ -1,7 +1,7 @@
 @use 'library' as x;
 
 @mixin store ($store, $defs: ()) {
-  @include x.define-store($store, $defs: ());
+  @include x.define-store($store, $defs);
 }
 
 @mixin breakpoint ($name, $breakpoint: null) {

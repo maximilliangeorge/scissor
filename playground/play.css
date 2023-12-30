@@ -1,0 +1,16 @@
+h1 {
+  color: var(--colors-primary-02d5ed);
+}
+
+:root {
+  --colors-primary: green;
+  --colors-secondary: blue;
+  --colors-primary-02d5ed: green;
+}
+@media (max-width: 767px) {
+  :root {
+    --colors-primary: yellow;
+    --colors-secondary: red;
+    --colors-primary-02d5ed: red;
+  }
+}

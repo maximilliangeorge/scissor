@@ -22,6 +22,30 @@
 
   }
 
+  @include it('should allow value definitions with the store') {
+
+    @include x.define-store('foo', (
+      'bar': blue,
+      'kek': (
+        '*': 10px,
+        'mobile': 20px
+      )
+    )); 
+
+    @include assert-equal(core.get-raw-store('foo'), (
+      'bar': (
+        '*': blue
+      ),
+      'kek': (
+        '*': 10px,
+        'mobile': 20px
+      )
+    ));
+
+    @include core.reset-stores();
+
+  }
+
 }
 
 @include describe('define-breakpoint') {

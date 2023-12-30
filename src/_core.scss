@@ -1,5 +1,4 @@
 @use 'util';
-// @use 'store';
 @use 'validate';
 @use 'sass:map';
 @use 'sass:list';
@@ -198,11 +197,7 @@ $_stores: (
   }
 
   @if ($overrides == null) {
-
-    @warn 'Unnecessary use of overrides, using default declaration for --#{$name}-#{$key}';
-
     @return var(--#{$name}-#{$key});
-
   }
 
   @else {
@@ -211,9 +206,10 @@ $_stores: (
 
     $entry: map.merge(map.get($store, $key), $overrides);
 
-    // check if we already have this entry
+    // check for unnecessary overrides
 
     @if ($entry == map.get($store, $key)) {
+      @warn 'Unnecessary use of overrides, using default declaration for --#{$name}-#{$key}';
       @return var(--#{$name}-#{$key});
     }
 
@@ -248,9 +244,14 @@ $_stores: (
 
 }
 
-@mixin define-store ($key, $value: ()) {
-  $_stores: map.set($_stores, $key, $value) !global;
-  // @debug $_stores;
+@mixin define-store ($name, $defs: ()) {
+
+  $_stores: map.set($_stores, $name, ()) !global;
+
+  @each $key, $def in $defs {
+    @include define-value($name, $key, $def);
+  }
+
 }
 
 @mixin define-breakpoint ($key, $def) {

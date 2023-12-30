@@ -1,10 +1,11 @@
 {
-  "name": "scissor-scss",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@scissor/scissor",
+  "version": "0.1.0",
+  "description": "A modern SASS/SCSS framework",
   "main": "index.js",
   "scripts": {
-    "test": "vitest packages library"
+    "test": "vitest packages library",
+    "playground": "sass playground --watch --style=expanded --no-source-map"
   },
   "author": "",
   "license": "ISC",

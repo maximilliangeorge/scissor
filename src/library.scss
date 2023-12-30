@@ -19,12 +19,16 @@
 
 @mixin use-store ($names) {
 
-  @if ($names == '*') {
-    @include core.inject-all-stores;
-  }
+  @at-root :root {
 
-  @else {
-    @include core.inject-stores($names);
+    @if ($names == '*') {
+      @include core.inject-all-stores;
+    }
+
+    @else {
+      @include core.inject-stores($names);
+    }
+
   }
 
 }

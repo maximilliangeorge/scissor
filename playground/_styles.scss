@@ -1,0 +1,7 @@
+@use '../src/use.scss';
+
+h1 {
+  color: use.value('colors', 'primary', (
+    'mobile': red
+  ));
+}
