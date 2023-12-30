@@ -1,6 +1,6 @@
 {
   "name": "@scissor/monorepo",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A modern SASS/SCSS framework",
   "main": "index.js",
   "workspaces": [
@@ -14,7 +14,9 @@
     "build:framework": "cp -a src/. dist/framework/",
     "build:use": "cp -r src/use.scss dist/use/index.scss",
     "build:define": "cp -r src/define.scss dist/define/index.scss",
-    "build": "npm run build:framework && npm run build:use && npm run build:define"
+    "build": "npm run build:framework && npm run build:use && npm run build:define",
+    "patch": "npm version patch && npm version patch --workspaces && syncpack fix-mismatches",
+    "publish": "npm publish --access public --workspaces"
   },
   "devDependencies": {
     "sass-true": "^7.0.0",

@@ -1,6 +1,6 @@
 {
   "name": "@scissor/use",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "A modern SASS/SCSS framework",
   "main": "index.scss",
   "scripts": {
@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/maximilliangeorge/scissor#readme",
   "dependencies": {
-    "@scissor/framework": "0.1.0"
+    "@scissor/framework": "0.1.2"
   }
 }
