@@ -1,0 +1,63 @@
+body {
+  background: #fff;
+}
+
+@define breakpoints() {
+  mobile: {
+    to: 768px;
+  },
+  tablet: {
+    from: 769px;
+    to: 1024px;
+  }
+}
+
+@define palette('colors');
+
+@define palette('colors') {
+  primary: {
+    mobile: #ff0000;
+    desktop: #ff0000;
+  }
+}
+
+@define value('colors/primary') {
+  mobile: #ff0000;
+  desktop: #ff0000;
+};
+
+@define pattern('colors/primary') {
+  color: blue;
+  line-height: 1rem;
+};
+
+body {
+  color: value('colors/primary', (
+    mobile: 20px
+  ));
+
+  @use breakpoint('mobile') {
+    color: red;
+  }
+
+}
+
+body {
+  @use palette('colors');
+
+  color: red;
+
+  @use pattern('colors/primary') {
+    mobile: {
+      color: blue;
+      font-size: 20px;
+    }
+  }
+
+  color: value('colors/primary', (
+    mobile: #ff0000
+  ));
+
+  color: red;
+
+}

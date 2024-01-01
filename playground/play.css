@@ -1,9 +1,0 @@
-body {
-  color: var(--colors-primary);
-}
-
-:root {
-  --colors-primary: red;
-  --colors-secondary: blue;
-  --colors-tertiary: orange;
-}
