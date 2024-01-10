@@ -1,18 +1,13 @@
-body {
-  background: #fff;
+/* breakpoint declarations */
+
+@define breakpoint('mobile') {
+  min-width: 320px;
 }
 
-@define breakpoints() {
-  mobile: {
-    to: 768px;
-  },
-  tablet: {
-    from: 769px;
-    to: 1024px;
-  }
-}
+@define breakpoint('mobile') as (max-width: 375px);
+@define breakpoint('tablet') as (min-width: 375px) and (max-width: 1440px);
 
-@define palette('colors');
+/* palette declarations */
 
 @define palette('colors') {
   primary: {
@@ -21,43 +16,56 @@ body {
   }
 }
 
-@define value('colors/primary') {
-  mobile: #ff0000;
+/* value declarations */
+
+@define store('colors') {
+  primary {
+    *: #ff0000;
+    mobile: #ff0000;
+  }
+}
+
+@define store('typo');
+
+@define value('typo/h1') {
+  *: #ff0000;
   desktop: #ff0000;
-};
+}
 
-@define pattern('colors/primary') {
-  color: blue;
-  line-height: 1rem;
-};
+/* pattern declarations */
 
-body {
-  color: value('colors/primary', (
-    mobile: 20px
-  ));
+@define pattern('typo/headline') {
 
-  @use breakpoint('mobile') {
-    color: red;
+  * {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  mobile {
+    margin-top: 5px;
+    margin-bottom: 5px;
   }
 
 }
 
+/* usage */
+
 body {
-  @use palette('colors');
+  @use store('typo');
+  @use pattern('typo/headline');
+  margin-top: value('spacing/10');
 
-  color: red;
+  color: value('color/primary',
+    exception('mobile', red)
+  );
 
-  @use pattern('colors/primary') {
-    mobile: {
-      color: blue;
-      font-size: 20px;
-    }
+  margin-top: value('spacing/10',
+    exception('mobile', 10px),
+    exception('tablet', 15px)
+  );
+
+  @use breakpoint('mobile', '==') {
+    color: green;
   }
-
-  color: value('colors/primary', (
-    mobile: #ff0000
-  ));
-
-  color: red;
 
 }

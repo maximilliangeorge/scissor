@@ -2,11 +2,10 @@
   "name": "@scissor/monorepo",
   "version": "0.1.3",
   "description": "A modern SASS/SCSS framework",
-  "main": "index.scss",
+  "repository": "https://github.com/maximilliangeorge/scissor",
   "workspaces": [
-    "dist/framework",
-    "dist/use",
-    "dist/define"
+    "packages/vscode-scissor",
+    "packages/postcss-scissor"
   ],
   "scripts": {
     "test": "vitest --watch",

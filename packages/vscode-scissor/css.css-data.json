@@ -1,0 +1,31 @@
+{
+  "version": 1.1,
+  "$schema": "https://unpkg.com/vscode-css-languageservice@5.1.9/docs/customData.schema.json",
+  "properties": [{
+    "name": "palette",
+    "description": "Inject a style palette"
+  }],
+  "pseudoClasses": [],
+  "atDirectives": [{
+    "name": "@define",
+    "description": "Define a Scissor module"
+  }, {
+    "name": "@use",
+    "description": "Use a Scissor module"
+  }, {
+    "name": "@palette",
+    "description": "Define a style palette"
+  }, {
+    "name": "@value",
+    "description": "Define a value"
+  }, {
+    "name": "@pattern",
+    "description": "Define a pattern"
+  }, {
+    "name": "@breakpoint",
+    "description": "Define a pattern"
+  }, {
+    "name": "@store",
+    "description": "Define a pattern"
+  }]
+}
