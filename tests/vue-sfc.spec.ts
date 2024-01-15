@@ -2,7 +2,7 @@ import type { LogLevel } from 'vite'
 import { build } from 'vite'
 import { describe, expect, test } from 'vitest'
 import vue from '@vitejs/plugin-vue'
-import scissorPlugin from '../src/index'
+import scissorPlugin from '../packages/postcss-scissor/index'
 
 const buildOpts = {
   root: './tests/fixtures/vue-sfc',
@@ -35,9 +35,9 @@ describe('postcss test', () => {
       return entry.name?.includes('.css')
     })
 
-    console.log(compiledCss[0].source)
+    // console.log(compiledCss[0].source)
 
-    console.log(compiledCss[1].source)
+    // console.log(compiledCss[1].source)
 
   })
 

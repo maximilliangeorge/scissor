@@ -2,34 +2,33 @@
 
 @define breakpoint('mobile') {
   min-width: 320px;
+  max-width: 767px;
 }
-
-@define breakpoint('mobile') as (max-width: 375px);
-@define breakpoint('tablet') as (min-width: 375px) and (max-width: 1440px);
 
 /* palette declarations */
 
 @define palette('colors') {
   primary: {
-    mobile: #ff0000;
-    desktop: #ff0000;
+    *: #fff;
+    mobile: #00f;
   }
 }
 
 /* value declarations */
 
-@define store('colors') {
-  primary {
-    *: #ff0000;
-    mobile: #ff0000;
-  }
+@define palette('sizes') {
+  large: 20px;
 }
 
-@define store('typo');
+@define palette('typo');
 
 @define value('typo/h1') {
   *: #ff0000;
   desktop: #ff0000;
+}
+
+@define value('red') {
+  *: red;
 }
 
 /* pattern declarations */
@@ -55,9 +54,10 @@ body {
   @use pattern('typo/headline');
   margin-top: value('spacing/10');
 
-  color: value('color/primary',
-    exception('mobile', red)
-  );
+  color: value('color/primary', (
+    *: red,
+    desktop: blue
+  ));
 
   margin-top: value('spacing/10',
     exception('mobile', 10px),

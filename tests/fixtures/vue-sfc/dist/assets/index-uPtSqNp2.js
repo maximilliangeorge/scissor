@@ -7309,7 +7309,7 @@ const Child = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render],
 const _sfc_main = {
   __name: "App",
   setup(__props) {
-    const AsyncChild = /* @__PURE__ */ defineAsyncComponent(() => __vitePreload(() => import("./AsyncChild-yPQpbZTw.js"), true ? __vite__mapDeps([0,1]) : void 0));
+    const AsyncChild = /* @__PURE__ */ defineAsyncComponent(() => __vitePreload(() => import("./AsyncChild-tMHaumAz.js"), true ? __vite__mapDeps([0,1]) : void 0));
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", null, [
         createVNode(Child),
@@ -7330,7 +7330,7 @@ export {
 };
 function __vite__mapDeps(indexes) {
   if (!__vite__mapDeps.viteFileDeps) {
-    __vite__mapDeps.viteFileDeps = ["assets/AsyncChild-yPQpbZTw.js","assets/AsyncChild-O_ryt5hy.css"]
+    __vite__mapDeps.viteFileDeps = ["assets/AsyncChild-tMHaumAz.js","assets/AsyncChild-L-xv2i3y.css"]
   }
   return indexes.map((i) => __vite__mapDeps.viteFileDeps[i])
 }
