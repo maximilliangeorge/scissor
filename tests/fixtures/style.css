@@ -85,7 +85,25 @@ body {
 
   margin-top: value('spacing/10', 'mobile');
 
+  /* breakpoints value */
+
   @use breakpoint('mobile', '==') {
+    color: green;
+  }
+
+  @use breakpoint('mobile', '<') {
+    color: green;
+  }
+
+  @use breakpoint('mobile', '<=') {
+    color: green;
+  }
+
+  @use breakpoint('mobile', '>') {
+    color: green;
+  }
+
+  @use breakpoint('mobile', '>=') {
     color: green;
   }
 

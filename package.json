@@ -14,6 +14,7 @@
     "publish:packages": "npm publish --access public --workspaces"
   },
   "devDependencies": {
+    "perfectionist": "^2.4.0",
     "syncpack": "^12.3.0",
     "vitest": "^1.1.0"
   },

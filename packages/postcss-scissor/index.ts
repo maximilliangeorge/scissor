@@ -1,5 +1,6 @@
 import type { PluginCreator, AtRule, Result, Rule, Plugin, Declaration } from 'postcss'
-import { parse } from 'postcss'
+
+import postcss from 'postcss'
 
 export type pluginOptions = {}
 
@@ -39,6 +40,10 @@ const plugin: PluginCreator<{}> = (opts) => {
       .map(arg => arg.trim())
 
     return [keyword, args]
+
+  }
+
+  function definePattern (args: string[], atRule: AtRule) {
 
   }
 
@@ -146,6 +151,9 @@ const plugin: PluginCreator<{}> = (opts) => {
     const [keyword, args] = parseAtRule(rule)
 
     switch (keyword) {
+      case 'pattern':
+        definePattern(args, rule)
+        break;
       case 'breakpoint':
         defineBreakpoint(args, rule)
         break;
@@ -159,7 +167,118 @@ const plugin: PluginCreator<{}> = (opts) => {
 
   }
   
-  function useBreakpoint (args: string[], atRule: AtRule) {}
+  function usePattern (args: string[], atRule: AtRule) {
+
+
+
+  }
+
+  function useBreakpoint (args: string[], atRule: AtRule) {
+
+    const breakpointName = args[0]
+    const comparison = args[1] || '=='
+    const breakpoint = Breakpoints[breakpointName]
+
+    if (!breakpoint) {
+      throw new Error(`Breakpoint "${breakpointName}" not found`)
+    }
+
+    let mediaRule
+
+    if (comparison == '==') {
+
+      mediaRule = postcss.atRule({
+        name: 'media',
+        params: breakpoint.rules.reduce((acc, rule, index, arr) => {
+
+          acc = acc + `(${rule.prop}: ${rule.value})`
+
+          if (index < arr.length - 1) {
+            acc = acc + ' and '
+          }
+
+          return acc
+
+        }, '')
+      })
+
+    }
+
+    else if (comparison == '<') {
+
+      const minWidth = breakpoint.rules.find(rule => rule.prop === 'min-width')
+
+      if (!minWidth) {
+        throw new Error(`Breakpoint "${breakpointName}" has no min-width`)
+      }
+
+      const mediaQuery = `(max-width: ${minWidth.value})`
+
+      mediaRule = postcss.atRule({
+        name: 'media',
+        params: mediaQuery
+      })
+
+    }
+
+    else if (comparison == '<=') {
+
+      const minWidth = breakpoint.rules.find(rule => rule.prop === 'max-width')
+
+      if (!minWidth) {
+        throw new Error(`Breakpoint "${breakpointName}" has no max-width`)
+      }
+
+      const mediaQuery = `(max-width: ${minWidth.value})`
+
+      mediaRule = postcss.atRule({
+        name: 'media',
+        params: mediaQuery
+      })
+
+    }
+
+    else if (comparison == '>') {
+
+      const minWidth = breakpoint.rules.find(rule => rule.prop === 'max-width')
+
+      if (!minWidth) {
+        throw new Error(`Breakpoint "${breakpointName}" has no max-width`)
+      }
+
+      const mediaQuery = `(min-width: ${minWidth.value})`
+
+      mediaRule = postcss.atRule({
+        name: 'media',
+        params: mediaQuery
+      })
+
+    }
+
+    else if (comparison == '>=') {
+
+      const minWidth = breakpoint.rules.find(rule => rule.prop === 'min-width')
+
+      if (!minWidth) {
+        throw new Error(`Breakpoint "${breakpointName}" has no min-width`)
+      }
+
+      const mediaQuery = `(min-width: ${minWidth.value})`
+
+      mediaRule = postcss.atRule({
+        name: 'media',
+        params: mediaQuery
+      })
+
+    }
+
+    if (!mediaRule) return
+
+    mediaRule.append(atRule.nodes)
+
+    atRule.replaceWith(mediaRule)
+
+  }
 
   function useValue (args: string[], atRule: AtRule) {}
 
@@ -178,9 +297,10 @@ const plugin: PluginCreator<{}> = (opts) => {
 
     Object.entries(palette).forEach(([valueName, value]) => {
 
-      const rule = parse(`
-        --x-${paletteName}-${valueName}: ${value['*']};
-      `)
+      const rule = decl({
+        prop: `--x-${paletteName}-${valueName}`,
+        value: value['*']
+      })
 
       rules.push(rule)
 
@@ -196,9 +316,10 @@ const plugin: PluginCreator<{}> = (opts) => {
 
         if (value[breakpointName]) {
 
-          const rule = parse(`
-            --x-${paletteName}-${valueName}: ${value[breakpointName]};
-          `)
+          const rule = decl({
+            prop: `--x-${paletteName}-${valueName}`,
+            value: value[breakpointName]
+          })
 
           breakpointRules.push(rule)
 
@@ -220,7 +341,7 @@ const plugin: PluginCreator<{}> = (opts) => {
 
       }, '@media ')
 
-      const mediaRule = parse(`
+      const mediaRule = postcss.parse(`
         ${mediaQuery} {
           ${breakpointRules}
         }
@@ -241,6 +362,9 @@ const plugin: PluginCreator<{}> = (opts) => {
     const [keyword, args] = parseAtRule(atRule)
 
     switch (keyword) {
+      case 'pattern':
+        usePattern(args, atRule)
+        break; 
       case 'breakpoint':
         useBreakpoint(args, atRule)
         break;
