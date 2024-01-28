@@ -43,13 +43,25 @@ describe('postcss test', () => {
         },
         "colors": {
           "primary": {
+            "*": "#000",
+          },
+          "secondary": {
             "*": "#fff",
-            "mobile": "#00f",
           },
         },
         "sizes": {
           "large": {
             "*": "20px",
+          },
+          "primary": {
+            "*": "10px",
+            "desktop": "20px",
+            "mobile": "15px",
+            "xl": "scale-up(50%)",
+          },
+          "secondary": {
+            "*": "10px",
+            "tablet": "15px",
           },
         },
         "typo": {
@@ -87,19 +99,36 @@ describe('postcss test', () => {
       /* usage */
 
       body {
-        @use store('typo');
+              --x-colors-primary: #000;
+              --x-colors-secondary: #fff;
+              --x-sizes-large: 20px;
+              --x-sizes-primary: 10px;
+              --x-sizes-secondary: 10px;
+              @media (min-width: 320px) and (max-width: 767px) {
+                
+                  --x-sizes-primary: 15px;
+                
+              }
         @use pattern('typo/headline');
+
         margin-top: value('spacing/10');
 
-        color: value('color/primary', (
-          *: red,
+        /* color: value('color/primary', (
           desktop: blue
-        ));
+        )); */
 
         margin-top: value('spacing/10',
-          exception('mobile', 10px),
-          exception('tablet', 15px)
+          not('mobile', 10px)
         );
+
+        margin-top: value('spacing/10', {
+          mobile: 10px;
+          tablet: 15px;
+        });
+
+        /* static value */
+
+        margin-top: value('spacing/10', 'mobile');
 
         @use breakpoint('mobile', '==') {
           color: green;

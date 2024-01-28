@@ -1,5 +1,5 @@
 import type { PluginCreator, AtRule, Result, Rule, Plugin, Declaration } from 'postcss'
-import { parse } from 'vue/compiler-sfc'
+import { parse } from 'postcss'
 
 export type pluginOptions = {}
 
@@ -23,8 +23,8 @@ const plugin: PluginCreator<{}> = (opts) => {
     rules: Record<string, string>
   }
 
-  const palettes: Record<string, Palette> = {}
-  const breakpoints: Record<string, Breakpoint> = {}
+  const Palettes: Record<string, Palette> = {}
+  const Breakpoints: Record<string, Breakpoint> = {}
 
   function parseAtRule (rule: AtRule): [string, string[]] {
 
@@ -59,7 +59,7 @@ const plugin: PluginCreator<{}> = (opts) => {
 
       })
 
-    breakpoints[name] = { name, rules }
+    Breakpoints[name] = { name, rules }
 
     atRule.remove()
 
@@ -71,29 +71,28 @@ const plugin: PluginCreator<{}> = (opts) => {
 
     // create palette if it doesn't exist
 
-    if (!palettes[name]) {
-      palettes[name] = {}
+    if (!Palettes[name]) {
+      Palettes[name] = {}
     }
 
     atRule.nodes?.forEach(node => {
 
       const valueName = node.prop || node.selector
 
-      // if ends with colon it's a group definition
+      if (node.nodes?.length) {
 
-      if (valueName?.endsWith(':')) {
+        const trimmedName = valueName?.endsWith(':') ?
+          valueName.slice(0, -1) : valueName
 
-        const trimmedName = valueName.slice(0, -1)
-
-        palettes[name][trimmedName] = {}
+          Palettes[name][trimmedName] = {}
 
         node.nodes?.forEach(node => {
-          palettes[name][trimmedName][node.prop || '*'] = node.value
+          Palettes[name][trimmedName][node.prop || '*'] = node.value
         })
 
       } else {
 
-        palettes[name][valueName] = {
+        Palettes[name][valueName] = {
           '*': node.value
         }
 
@@ -116,14 +115,14 @@ const plugin: PluginCreator<{}> = (opts) => {
 
     // create palette if it doesn't exist
 
-    if (!palettes[paletteName]) {
-      palettes[paletteName] = {}
+    if (!Palettes[paletteName]) {
+      Palettes[paletteName] = {}
     }
 
     // create value if it doesn't exist
 
-    if (!palettes[paletteName][valueName]) {
-      palettes[paletteName][valueName] = {}
+    if (!Palettes[paletteName][valueName]) {
+      Palettes[paletteName][valueName] = {}
     }
 
     // loop over breakpoints and store values
@@ -134,7 +133,7 @@ const plugin: PluginCreator<{}> = (opts) => {
       const breakpointName = decl.prop || '*'
       const breakpointValue = decl.value
 
-      palettes[paletteName][valueName][breakpointName] = breakpointValue
+      Palettes[paletteName][valueName][breakpointName] = breakpointValue
 
     })
 
@@ -160,8 +159,99 @@ const plugin: PluginCreator<{}> = (opts) => {
 
   }
   
+  function useBreakpoint (args: string[], atRule: AtRule) {}
+
+  function useValue (args: string[], atRule: AtRule) {}
+
+  function usePalette (args: string[], atRule: AtRule) {
+
+    const paletteName = args[0]
+    const palette = Palettes[paletteName]
+
+    if (!palette) {
+      throw new Error(`Palette "${paletteName}" not found`)
+    }
+
+    // first loop over default values
+
+    const rules = <any>[]
+
+    Object.entries(palette).forEach(([valueName, value]) => {
+
+      const rule = parse(`
+        --x-${paletteName}-${valueName}: ${value['*']};
+      `)
+
+      rules.push(rule)
+
+    })
+
+    // then loop over breakpoints
+
+    Object.entries(Breakpoints).forEach(([breakpointName, breakpoint]) => {
+
+      const breakpointRules = <any>[]
+
+      Object.entries(palette).forEach(([valueName, value]) => {
+
+        if (value[breakpointName]) {
+
+          const rule = parse(`
+            --x-${paletteName}-${valueName}: ${value[breakpointName]};
+          `)
+
+          breakpointRules.push(rule)
+
+        }
+
+      })
+
+      if (breakpointRules.length === 0) return
+
+      const mediaQuery = breakpoint.rules.reduce((acc, rule, index, arr) => {
+
+        acc = acc + `(${rule.prop}: ${rule.value})`
+
+        if (index < arr.length - 1) {
+          acc = acc + ' and '
+        }
+
+        return acc
+
+      }, '@media ')
+
+      const mediaRule = parse(`
+        ${mediaQuery} {
+          ${breakpointRules}
+        }
+      `)
+      
+      rules.push(mediaRule)
+
+    })
+
+    // add rules to stylesheet
+
+    atRule.replaceWith(...rules)
+
+  }
+
   function useRule (atRule: AtRule) {
     
+    const [keyword, args] = parseAtRule(atRule)
+
+    switch (keyword) {
+      case 'breakpoint':
+        useBreakpoint(args, atRule)
+        break;
+      case 'value':
+        useValue(args, atRule)
+        break;
+      case 'palette':
+        usePalette(args, atRule)
+        break;
+    }
+
   }
 
   return {
@@ -182,8 +272,8 @@ const plugin: PluginCreator<{}> = (opts) => {
     },
     Once (_, { result }) {
       result.scissor = {
-        palettes,
-        breakpoints
+        palettes: Palettes,
+        breakpoints: Breakpoints
       }
     },
     OnceExit(css) {

@@ -8,16 +8,28 @@
 /* palette declarations */
 
 @define palette('colors') {
-  primary: {
-    *: #fff;
-    mobile: #00f;
-  }
+  primary: #000;
+  secondary: #fff;
 }
 
 /* value declarations */
 
 @define palette('sizes') {
+
   large: 20px;
+
+  primary {
+    *: 10px;
+    mobile: 15px;
+    desktop: 20px;
+    xl: scale-up(50%);
+  }
+
+  secondary {
+    *: 10px;
+    tablet: 15px;
+  }
+
 }
 
 @define palette('typo');
@@ -50,19 +62,28 @@
 /* usage */
 
 body {
-  @use store('typo');
+  @use palette('colors');
+  @use palette('sizes');
   @use pattern('typo/headline');
+
   margin-top: value('spacing/10');
 
-  color: value('color/primary', (
-    *: red,
+  /* color: value('color/primary', (
     desktop: blue
-  ));
+  )); */
 
   margin-top: value('spacing/10',
-    exception('mobile', 10px),
-    exception('tablet', 15px)
+    not('mobile', 10px)
   );
+
+  margin-top: value('spacing/10', {
+    mobile: 10px;
+    tablet: 15px;
+  });
+
+  /* static value */
+
+  margin-top: value('spacing/10', 'mobile');
 
   @use breakpoint('mobile', '==') {
     color: green;
